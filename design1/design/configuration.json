@@ -1,0 +1,73 @@
+{
+    "task": "chat",
+    "model": {
+        "type": "chatglm2-6b"
+    },
+    "train": {
+        "dataloader": {
+            "batch_size_per_gpu": 16,
+            "workers_per_gpu": 0,
+            "shuffle": false,
+            "drop_last": false
+        },
+        "max_epochs": 3,
+        "work_dir": "./tmp_chatglm2_target",
+        "optimizer": {
+            "lr": 5e-05,
+            "type": "AdamW",
+            "options": {
+                "cumulative_iters": 1
+            }
+        },
+        "lr_scheduler": {
+            "type": "LinearLR",
+            "options": {
+                "lr_strategy": "by_step"
+            },
+            "total_iters": 6
+        },
+        "logging": {
+            "interval": 5
+        },
+        "checkpoint": {
+            "period": {
+                "save_strategy": "no",
+                "interval": 1,
+                "max_checkpoint_num": null,
+                "hub_repo_id": null,
+                "hub_token": null,
+                "hub_revision": "master"
+            },
+            "best": {
+                "save_best": true,
+                "metric_key": "rouge-l",
+                "rule": "max",
+                "max_checkpoint_num": 1,
+                "hub_token": null,
+                "hub_revision": "master"
+            }
+        }
+    },
+    "evaluation": {
+        "dataloader": {
+            "batch_size_per_gpu": 16,
+            "workers_per_gpu": 0,
+            "shuffle": false,
+            "drop_last": false
+        },
+        "period": {
+            "eval_strategy": "by_epoch",
+            "interval": 1
+        },
+        "metrics": "chatglm"
+    },
+    "gen_kwargs": {
+        "do_sample": true,
+        "top_p": 0.7,
+        "max_length": 512,
+        "temperature": 0.95
+    },
+    "pipeline": {
+        "type": "chat"
+    }
+}
